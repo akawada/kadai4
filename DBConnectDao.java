@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBConnectDao {
-	public static <BookList> List<BookList> conectOracle() throws Exception{
+	public <T> List<T> conectOracle() throws Exception{
 		/* ユーザ名 */
 		String user = "system";
 		/* パスワード */
