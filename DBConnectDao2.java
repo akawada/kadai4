@@ -2,65 +2,36 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBConnectDao2 {
-	public void conectOracle(String strin) throws Exception{
+	public <T> List<T> conectOracle(String Strin, String Sql) throws Exception{
 		/* ユーザ名 */
 		String user = "system";
 		/* パスワード */
 		String pass = "kawadb";
 		/* サーバ名 */
 		String servername = "localhost";
+		String SelTable = Strin;
 		Connection conn = null;
 		/* SQL文 */
-		String sql =null;
-		if(strin.equals("1") ){
-			sql = "SELECT * FROM book";
-		}
-		else if(strin.equals("2")){
-			sql = "SELECT * FROM library";
-		}
-		else{
-			sql = "SELECT library.libname ,count(*) ";
-			sql += "FROM lblink, library ";
-			sql += "WHERE lblink.libid = library.id ";
-			sql += "group by library.libname";
-		}
+		String InSql = Sql;
 		PreparedStatement ps = null;
         ResultSet rs = null;
+        List SelList = new ArrayList();
 	  	try{
 			/* ドライバクラスのロード */
 			Class.forName ("oracle.jdbc.driver.OracleDriver");
 			/* Connectionの作成 */
-			conn = DriverManager.getConnection 
+			DataSelStore dataselstore = new DataSelStore();
+			conn = DriverManager.getConnection
 			("jdbc:oracle:thin:@" + servername + ":1521:" ,user,pass);
 			/* SQLの指定 */
-            ps = conn.prepareStatement(sql);
+            ps = conn.prepareStatement(InSql);
 			/* SELECT実行 */
             rs = ps.executeQuery();
-            //取得した結果を全件出力する
-            while(rs.next()){
-        		if(strin.equals("1") ){
-                    System.out.print(rs.getString("id"));
-                    System.out.print("/" + rs.getString("title"));
-                    System.out.print("/" + rs.getInt("price"));
-                    System.out.print("/" + rs.getString("author"));
-                    System.out.print("/" + rs.getString("publisher"));
-                    System.out.print("/" + rs.getDate("entry_date"));
-                    System.out.print("/" + rs.getDate("update_date"));
-        		}
-        		else if(strin.equals("2")){
-                    System.out.print(rs.getString("id"));
-                    System.out.print("/" + rs.getString("libname"));
-                    System.out.print("/" + rs.getDate("entry_date"));
-                    System.out.print("/" + rs.getDate("update_date"));
-        		}
-        		else{
-                    System.out.print(rs.getString("libname"));
-                    System.out.print(":" + rs.getString("count(*)"));
-        		}
-                System.out.println();
-            }
+            SelList= dataselstore.SetDbData(rs, SelTable);
 	  	}
 	  	catch ( Exception e){
 			throw e;	
@@ -71,8 +42,8 @@ public class DBConnectDao2 {
 			  conn.close();
 			  conn = null;
 			  //System.out.println("切断しました");
-			}
-	    }
+			  }
+		}
+		return SelList;
 	}
 }
-
