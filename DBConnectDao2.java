@@ -6,44 +6,74 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBConnectDao2 {
-	public <T> List<T> conectOracle(String Strin, String Sql) throws Exception{
+	public <T> List<T> conectOracle(String strin, String sql) throws Exception {
 		/* ユーザ名 */
 		String user = "system";
 		/* パスワード */
 		String pass = "kawadb";
 		/* サーバ名 */
-		String servername = "localhost";
-		String SelTable = Strin;
+		String serverName = "localhost";
+		String selTable = strin;
 		Connection conn = null;
 		/* SQL文 */
-		String InSql = Sql;
+		String inSql = sql;
 		PreparedStatement ps = null;
-        ResultSet rs = null;
-        List SelList = new ArrayList();
-	  	try{
+		ResultSet rs = null;
+		List selList = new ArrayList();
+		try {
 			/* ドライバクラスのロード */
-			Class.forName ("oracle.jdbc.driver.OracleDriver");
+			Class.forName("oracle.jdbc.driver.OracleDriver");
 			/* Connectionの作成 */
 			DataSelStore dataselstore = new DataSelStore();
-			conn = DriverManager.getConnection
-			("jdbc:oracle:thin:@" + servername + ":1521:" ,user,pass);
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@" + serverName + ":1521:", user, pass);
 			/* SQLの指定 */
-            ps = conn.prepareStatement(InSql);
+			ps = conn.prepareStatement(inSql);
 			/* SELECT実行 */
-            rs = ps.executeQuery();
-            SelList= dataselstore.SetDbData(rs, SelTable);
-	  	}
-	  	catch ( Exception e){
-			throw e;	
-		}
-		finally{			
+			rs = ps.executeQuery();
+			selList = dataselstore.SetDbData(rs, selTable);
+		} catch (Exception e) {
+			throw e;
+		} finally {
 			/* クローズ処理 */
-			if(conn != null){
-			  conn.close();
-			  conn = null;
-			  //System.out.println("切断しました");
-			  }
+			if (conn != null) {
+				conn.close();
+				conn = null;
+				// System.out.println("切断しました");
+			}
 		}
-		return SelList;
+		return selList;
+	}
+
+	public void executeInsert(String sql) throws Exception {
+		/* ユーザ名 */
+		String user = "system";
+		/* パスワード */
+		String pass = "kawadb";
+		/* サーバ名 */
+		String serverName = "localhost";
+		Connection conn = null;
+		/* SQL文 */
+		String inSql = sql;
+		PreparedStatement ps = null;
+		try {
+			/* ドライバクラスのロード */
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			/* Connectionの作成 */
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@" + serverName + ":1521:", user, pass);
+			/* SQLの指定 */
+			ps = conn.prepareStatement(inSql);
+			/* INSERT実行 */
+			ps.executeUpdate();
+			conn.commit();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			/* クローズ処理 */
+			if (conn != null) {
+				conn.close();
+				conn = null;
+				// System.out.println("切断しました");
+			}
+		}
 	}
 }

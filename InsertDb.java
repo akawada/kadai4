@@ -2,43 +2,46 @@ import java.util.Scanner;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class InsertDb {
+public class InsertDB {
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 		Date date = new Date();
-		DBConnectDao3 dbconnectdao = new DBConnectDao3();
+		DBConnectDao2 dbconnectdao = new DBConnectDao2();
 		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
-		String StrDate = null;
-		String Strin = null;
-		String Strin2 = null;
-		String Strin3 = null;
-		String Strin4 = null;
-		String Strin5 = null;
-		String Strin6 = null;
-		String Strin7 = null;
-		String Sql = null;
+		String strDate = null;
+		String strSelTable = null;
+		String strBid = null;
+		String strLid = null;
+		String strLbid = null;
+		String strGenre = null;
+		String strLibName = null;
+		String strTitle = null;
+		String strPrice = null;
+		String strAuthor = null;
+		String strPublisher = null;
+		String sql = null;
 		// 追加するテーブルの選択
 		while (true) {
 			System.out.println("処理を選択してください");
 			System.out.println("1.本データを追加");
 			System.out.println("2.図書館デーを追加");
 			System.out.println("3.紐付きデータを追加");
-			Strin = scan.next();
-			if (chknum1(Strin)) {
-				StrDate = sdf1.format(date);
-				System.out.println(StrDate);
+			strSelTable = scan.next();
+			if (chknum1(strSelTable)) {
+				strDate = sdf1.format(date);
+				System.out.println(strDate);
 				break;
 			} else {
 				System.err.println("不正な値です。もう一度入力してください。");
 			}
 		}
 		// 本テーブルの場合
-		if (Strin.equals("1")) {
+		if (strSelTable.equals("1")) {
 			while (true) {
 				System.out.println("IDを入力してください");
 				System.out.println("例：BXXX");
-				Strin2 = scan.next();
-				if (chkbid(Strin2)) {
+				strBid = scan.next();
+				if (chkbid(strBid)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -46,8 +49,8 @@ public class InsertDb {
 			}
 			while (true) {
 				System.out.println("ジャンルを入力してください");
-				Strin3 = scan.next();
-				if (chkbyte(Strin3)) {
+				strGenre = scan.next();
+				if (chkbyte(strGenre)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -55,8 +58,8 @@ public class InsertDb {
 			}
 			while (true) {
 				System.out.println("タイトルを入力してください");
-				Strin4 = scan.next();
-				if (chkbyte(Strin4)) {
+				strTitle = scan.next();
+				if (chkbyte(strTitle)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -64,8 +67,8 @@ public class InsertDb {
 			}
 			while (true) {
 				System.out.println("値段を入力してください");
-				Strin5 = scan.next();
-				if (chkprice(Strin5)) {
+				strPrice = scan.next();
+				if (chkprice(strPrice)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -73,8 +76,8 @@ public class InsertDb {
 			}
 			while (true) {
 				System.out.println("作者を入力してください");
-				Strin6 = scan.next();
-				if (chkbyte(Strin6)) {
+				strAuthor = scan.next();
+				if (chkbyte(strAuthor)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -82,8 +85,8 @@ public class InsertDb {
 			}
 			while (true) {
 				System.out.println("出版社を入力してください");
-				Strin7 = scan.next();
-				if (chkbyte(Strin7)) {
+				strPublisher = scan.next();
+				if (chkbyte(strPublisher)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -91,40 +94,40 @@ public class InsertDb {
 			}
 			scan.close();
 			// SQLの作成
-			Sql = "INSERT INTO book ";
-			Sql += "( id, genre, title, price, author, publisher, entry_date, update_date )";
-			Sql += " VALUES( ";
-			Sql += "'";
-			Sql += Strin2;
-			Sql += "', ";
-			Sql += "'";
-			Sql += Strin3;
-			Sql += "', ";
-			Sql += "'";
-			Sql += Strin4;
-			Sql += "', ";
-			Sql += Strin5;
-			Sql += ", ";
-			Sql += "'";
-			Sql += Strin6;
-			Sql += "', ";
-			Sql += "'";
-			Sql += Strin7;
-			Sql += "', ";
-			Sql += "'";
-			Sql += StrDate;
-			Sql += "', ";
-			Sql += "'";
-			Sql += StrDate;
-			Sql += "' ) ";
+			sql = "INSERT INTO book ";
+			sql += "( id, genre, title, price, author, publisher, entry_date, update_date )";
+			sql += " VALUES( ";
+			sql += "'";
+			sql += strBid;
+			sql += "', ";
+			sql += "'";
+			sql += strGenre;
+			sql += "', ";
+			sql += "'";
+			sql += strTitle;
+			sql += "', ";
+			sql += strPrice;
+			sql += ", ";
+			sql += "'";
+			sql += strAuthor;
+			sql += "', ";
+			sql += "'";
+			sql += strPublisher;
+			sql += "', ";
+			sql += "'";
+			sql += strDate;
+			sql += "', ";
+			sql += "'";
+			sql += strDate;
+			sql += "' ) ";
 		}
 		// 図書館テーブルの場合
-		else if (Strin.equals("2")) {
+		else if (strSelTable.equals("2")) {
 			while (true) {
 				System.out.println("IDを入力してください");
 				System.out.println("例：LXXX");
-				Strin2 = scan.next();
-				if (chklid(Strin2)) {
+				strLid = scan.next();
+				if (chklid(strLid)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -132,8 +135,8 @@ public class InsertDb {
 			}
 			while (true) {
 				System.out.println("図書館名を入力してください");
-				Strin3 = scan.next();
-				if (chkbyte(Strin3)) {
+				strLibName = scan.next();
+				if (chkbyte(strLibName)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -141,29 +144,29 @@ public class InsertDb {
 			}
 			scan.close();
 			// SQLの作成
-			Sql = "INSERT INTO library ";
-			Sql += "( id, libname, entry_date, update_date )";
-			Sql += " VALUES( ";
-			Sql += "'";
-			Sql += Strin2;
-			Sql += "', ";
-			Sql += "'";
-			Sql += Strin3;
-			Sql += "', ";
-			Sql += "'";
-			Sql += StrDate;
-			Sql += "', ";
-			Sql += "'";
-			Sql += StrDate;
-			Sql += "' ) ";
+			sql = "INSERT INTO library ";
+			sql += "( id, libname, entry_date, update_date )";
+			sql += " VALUES( ";
+			sql += "'";
+			sql += strLid;
+			sql += "', ";
+			sql += "'";
+			sql += strLibName;
+			sql += "', ";
+			sql += "'";
+			sql += strDate;
+			sql += "', ";
+			sql += "'";
+			sql += strDate;
+			sql += "' ) ";
 		}
 		// 紐付きテーブルの場合
 		else {
 			while (true) {
 				System.out.println("IDを入力してください");
 				System.out.println("例：LBXX");
-				Strin2 = scan.next();
-				if (chklbid(Strin2)) {
+				strLbid = scan.next();
+				if (chklbid(strLbid)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -172,8 +175,8 @@ public class InsertDb {
 			while (true) {
 				System.out.println("図書館IDを入力してください");
 				System.out.println("例：LXXX");
-				Strin3 = scan.next();
-				if (chklid(Strin3)) {
+				strLid = scan.next();
+				if (chklid(strLid)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -182,8 +185,8 @@ public class InsertDb {
 			while (true) {
 				System.out.println("本IDを入力してください");
 				System.out.println("例：BXXX");
-				Strin4 = scan.next();
-				if (chkbid(Strin4)) {
+				strBid = scan.next();
+				if (chkbid(strBid)) {
 					break;
 				} else {
 					System.err.println("不正な値です。もう一度入力してください。");
@@ -191,32 +194,32 @@ public class InsertDb {
 			}
 			scan.close();
 			// SQLの作成
-			Sql = "INSERT INTO lblink ";
-			Sql += "( id, libid, bid, entry_date, update_date )";
-			Sql += " VALUES( ";
-			Sql += "'";
-			Sql += Strin2;
-			Sql += "', ";
-			Sql += "'";
-			Sql += Strin3;
-			Sql += "', ";
-			Sql += "'";
-			Sql += Strin4;
-			Sql += "', ";
-			Sql += "'";
-			Sql += StrDate;
-			Sql += "', ";
-			Sql += "'";
-			Sql += StrDate;
-			Sql += "' ) ";
+			sql = "INSERT INTO lblink ";
+			sql += "( id, libid, bid, entry_date, update_date )";
+			sql += " VALUES( ";
+			sql += "'";
+			sql += strLbid;
+			sql += "', ";
+			sql += "'";
+			sql += strLid;
+			sql += "', ";
+			sql += "'";
+			sql += strBid;
+			sql += "', ";
+			sql += "'";
+			sql += strDate;
+			sql += "', ";
+			sql += "'";
+			sql += strDate;
+			sql += "' ) ";
 		}
-		System.out.println(Sql);
+		System.out.println(sql);
 		try {
-			dbconnectdao.conectOracle(Sql);
+			dbconnectdao.executeInsert(sql);
 			System.out.println("処理が完了しました。");
 		} catch (Exception e) {
 			/* エラーメッセージ */
-			System.out.println("処理に失敗しました");
+			System.err.println("処理に失敗しました");
 		}
 	}
 
