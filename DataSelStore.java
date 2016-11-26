@@ -30,6 +30,15 @@ public class DataSelStore {
                 SelList.add(library);
             }
         }
+        else if (Strin.equals("3")){
+        	while (InRs.next()) {
+        		BookLibName booklibname = new BookLibName();
+        		booklibname.setLibname(InRs.getString(15));
+        		booklibname.setTitle(InRs.getString(8));
+        		booklibname.setAuthor(InRs.getString(10));
+                SelList.add(booklibname);
+            }
+        }
         else{
         	while (InRs.next()) {
                 Lblink lblink = new Lblink();
