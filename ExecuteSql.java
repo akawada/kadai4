@@ -372,6 +372,7 @@ public class ExecuteSql {
 					sqlWhere += "'";
 					sqlWhere += inputGenre;
 					sqlWhere += "'";
+					whereFlg = "2";
 				}
 				if (inputTitle != null) {
 					if (whereFlg.equals("2")) {
@@ -381,12 +382,14 @@ public class ExecuteSql {
 					sqlWhere += "'";
 					sqlWhere += inputTitle;
 					sqlWhere += "'";
+					whereFlg = "2";
 				}
 				if (inputPrice != null) {
 					if (whereFlg.equals("2")) {
 						sqlWhere += " AND";
 					}
 					sqlWhere += " book.price = " + inputPrice;
+					whereFlg = "2";
 				}
 				if (inputAuthor != null) {
 					if (whereFlg.equals("2")) {
@@ -396,6 +399,7 @@ public class ExecuteSql {
 					sqlWhere += "'";
 					sqlWhere += inputAuthor;
 					sqlWhere += "'";
+					whereFlg = "2";
 				}
 				if (inputPublisher != null) {
 					if (whereFlg.equals("2")) {
@@ -405,6 +409,7 @@ public class ExecuteSql {
 					sqlWhere += "'";
 					sqlWhere += inputPublisher;
 					sqlWhere += "'";
+					whereFlg = "2";
 				}
 			}
 			//System.out.println(sqlWhere);
