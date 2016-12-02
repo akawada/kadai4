@@ -1,8 +1,6 @@
 import java.util.Scanner;
-import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,13 +27,19 @@ public class ExecuteSql {
 		if (input_value.equals("2")) {
 			InsertDb();
 		}
+		if (input_value.equals("3")) {
+			UpdateDb();
+		}
+		if (input_value.equals("4")) {
+			DeleteDb();
+		}
 		scan.close();
 	}
 
 	public static void InsertDb() {
 		Scanner scan = new Scanner(System.in);
 		Date date = new Date();
-		DBConnectDao4 dbconnectdao = new DBConnectDao4();
+		DBConnectDao5 dbconnectdao = new DBConnectDao5();
 		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
 		String strDate = null;
 		String strSelTable = null;
@@ -51,10 +55,10 @@ public class ExecuteSql {
 		String sql = null;
 		// 追加するテーブルの選択
 		while (true) {
-			System.out.println("処理を選択してください");
-			System.out.println("1.本データを追加");
-			System.out.println("2.図書館デーを追加");
-			System.out.println("3.紐付きデータを追加");
+			System.out.println("対象を選択してください");
+			System.out.println("1.本データを選択");
+			System.out.println("2.図書館デーを選択");
+			System.out.println("3.紐付きデータを選択");
 			strSelTable = scan.next();
 			if (chknum1(strSelTable)) {
 				strDate = sdf1.format(date);
@@ -242,9 +246,9 @@ public class ExecuteSql {
 			sql += strDate;
 			sql += "' ) ";
 		}
-		System.out.println(sql);
+		// System.out.println(sql);
 		try {
-			dbconnectdao.executeInsert(sql);
+			dbconnectdao.executeSql(sql);
 			System.out.println("処理が完了しました。");
 		} catch (Exception e) {
 			/* エラーメッセージ */
@@ -254,7 +258,7 @@ public class ExecuteSql {
 
 	public static void SelectDb() {
 		Scanner scan = new Scanner(System.in);
-		DBConnectDao4 dbconnectdao = new DBConnectDao4();
+		DBConnectDao5 dbconnectdao = new DBConnectDao5();
 		List selList = new ArrayList();
 		String inputvalue = null;
 		String inputSelBookValue = null;
@@ -262,10 +266,7 @@ public class ExecuteSql {
 		String sql = null;
 		String whereFlg = "0";
 		String sqlWhere = null;
-		String inputDate = null;
-		String inputSelTable = null;
 		String inputBid = null;
-		String inputLid = null;
 		String inputLbid = null;
 		String inputGenre = null;
 		String inputLibName = null;
@@ -412,15 +413,15 @@ public class ExecuteSql {
 					whereFlg = "2";
 				}
 			}
-			//System.out.println(sqlWhere);
+			// System.out.println(sqlWhere);
 			sql = "SELECT *";
 			sql += " FROM lblink";
 			sql += " INNER JOIN book ON lblink.bid = book.id";
 			sql += " INNER JOIN library ON lblink.libid = library.id";
-			if (whereFlg.equals("2")){
+			if (whereFlg.equals("2")) {
 				sql += sqlWhere;
 			}
-			//System.out.println(sql);
+			// System.out.println(sql);
 		}
 
 		// 図書館テーブルの場合
@@ -472,68 +473,999 @@ public class ExecuteSql {
 					sqlWhere += "'";
 					sqlWhere += inputLibName;
 					sqlWhere += "'";
+					whereFlg = "2";
 				}
 			}
-			System.out.println(sqlWhere);
+			// System.out.println(sqlWhere);
 			sql = "SELECT *";
 			sql += " FROM library";
-			if (whereFlg.equals("2")){
+			if (whereFlg.equals("2")) {
 				sql += sqlWhere;
 			}
 			System.out.println(sql);
 			scan.close();
-		}
-        else{
+		} else {
 			selDb = "4";
-        	sql = "SELECT library.libname ,count(*) ";
-        	sql += "FROM lblink, library ";
-        	sql += "WHERE lblink.libid = library.id ";
-        	sql += "group by library.libname";
-        }
+			sql = "SELECT library.libname ,count(*) ";
+			sql += "FROM lblink, library ";
+			sql += "WHERE lblink.libid = library.id ";
+			sql += "group by library.libname";
+		}
 		try {
-	    	selList = dbconnectdao.conectOracle(selDb, sql);
-            if (selDb.equals("1")){
-	            Book book2;
-	            for (int i = 0; i < selList.size(); i++) {
-	            	book2 = (Book) selList.get(i);
-	                System.out.print(book2.getId() + "/");
-	                System.out.print(book2.getGenre() + "/");
-	                System.out.print(book2.getTitle() + "/");
-	                System.out.print(book2.getPrice() + "/");
-	                System.out.print(book2.getAuthor() + "/");
-	                System.out.print(book2.getPublisher() + "/");
-	                System.out.print(book2.getEntry_date() + "/");
-	                System.out.print(book2.getUpdate_date() + "\n");
-	            }
-            }
-            else if (selDb.equals("2")){
-	            Library librayr2;
-	            for (int i = 0; i < selList.size(); i++) {
-	            	librayr2 = (Library) selList.get(i);
-	                System.out.print(librayr2.getId() + "/");
-	                System.out.print(librayr2.getLibname() + "/");
-	                System.out.print(librayr2.getEntry_date() + "/");
-	                System.out.print(librayr2.getUpdate_date() + "\n");
-	            }
-            }
-            else if (selDb.equals("3")){
-	            BookLibName booklibname2;
-	            for (int i = 0; i < selList.size(); i++) {
-	            	booklibname2 = (BookLibName) selList.get(i);
-	                System.out.print(booklibname2.getLibname() + "/");
-	                System.out.print(booklibname2.getTitle() + "/");
-	                System.out.print(booklibname2.getAuthor()  + "\n");
-	            }
-            }
-            else{
-	            Lblink Lblink2;
-	            for (int i = 0; i < selList.size(); i++) {
-	            	Lblink2 = (Lblink) selList.get(i);
-	                System.out.print(Lblink2.getLibname() + "/");
-	                System.out.print(Lblink2.getCount() + "冊\n");
-	            }
-            }
+			selList = dbconnectdao.SelectSql(selDb, sql);
+			if (selDb.equals("1")) {
+				Book book2;
+				for (int i = 0; i < selList.size(); i++) {
+					book2 = (Book) selList.get(i);
+					System.out.print(book2.getId() + "/");
+					System.out.print(book2.getGenre() + "/");
+					System.out.print(book2.getTitle() + "/");
+					System.out.print(book2.getPrice() + "/");
+					System.out.print(book2.getAuthor() + "/");
+					System.out.print(book2.getPublisher() + "/");
+					System.out.print(book2.getEntry_date() + "/");
+					System.out.print(book2.getUpdate_date() + "\n");
+				}
+			} else if (selDb.equals("2")) {
+				Library librayr2;
+				for (int i = 0; i < selList.size(); i++) {
+					librayr2 = (Library) selList.get(i);
+					System.out.print(librayr2.getId() + "/");
+					System.out.print(librayr2.getLibname() + "/");
+					System.out.print(librayr2.getEntry_date() + "/");
+					System.out.print(librayr2.getUpdate_date() + "\n");
+				}
+			} else if (selDb.equals("3")) {
+				BookLibName booklibname2;
+				for (int i = 0; i < selList.size(); i++) {
+					booklibname2 = (BookLibName) selList.get(i);
+					System.out.print(booklibname2.getLibname() + "/");
+					System.out.print(booklibname2.getTitle() + "/");
+					System.out.print(booklibname2.getAuthor() + "\n");
+				}
+			} else {
+				Lblink Lblink2;
+				for (int i = 0; i < selList.size(); i++) {
+					Lblink2 = (Lblink) selList.get(i);
+					System.out.print(Lblink2.getLibname() + "/");
+					System.out.print(Lblink2.getCount() + "冊\n");
+				}
+			}
 
+			System.out.println("処理が完了しました。");
+		} catch (Exception e) {
+			/* エラーメッセージ */
+			System.err.println("処理に失敗しました");
+		}
+	}
+
+	public static void UpdateDb() {
+		Scanner scan = new Scanner(System.in);
+		DBConnectDao5 dbconnectdao = new DBConnectDao5();
+		String inputvalue = null;
+		String inputUpdBookValue = null;
+		String inputWhereBookValue = null;
+		String inputUpdLibraryValue = null;
+		String inputWhereLibraryValue = null;
+		String inputUpdLblinkValue = null;
+		String inputWhereLblinkValue = null;
+		String sql = null;
+		String whereFlg = "0";
+		String updFlg = "0";
+		String sqlWhere = null;
+		String sqlUpd = null;
+		String inputUpdBid = null;
+		String inputUpdLid = null;
+		String inputUpdLbid = null;
+		String inputUpdGenre = null;
+		String inputUpdLibName = null;
+		String inputUpdTitle = null;
+		String inputUpdPrice = null;
+		String inputUpdAuthor = null;
+		String inputUpdPublisher = null;
+		String inputWhereBid = null;
+		String inputWhereLid = null;
+		String inputWhereLbid = null;
+		String inputWhereGenre = null;
+		String inputWhereLibName = null;
+		String inputWhereTitle = null;
+		String inputWherePrice = null;
+		String inputWhereAuthor = null;
+		String inputWherePublisher = null;
+		Date date = new Date();
+		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
+		String strDate = sdf1.format(date);
+
+		while (true) {
+			System.out.println("対象を選択してください");
+			System.out.println("1.本データを選択");
+			System.out.println("2.図書館データを選択");
+			System.out.println("3.紐付きデータを選択");
+			inputvalue = scan.next();
+			if (chknum2(inputvalue)) {
+				break;
+			} else {
+				System.err.println("不正な数値です。もう一度入力してください。");
+			}
+		}
+		// 本テーブルの場合
+		if (inputvalue.equals("1")) {
+			while (true) {
+				System.out.println("更新する項目を選択してください");
+				System.out.println("1.ID");
+				System.out.println("2.ジャンル");
+				System.out.println("3.タイトル");
+				System.out.println("4.値段");
+				System.out.println("5.作者");
+				System.out.println("6.出版社");
+				System.out.println("0.更新条件を設定します");
+				if (inputUpdBid != null) {
+					System.out.println("ID:" + inputUpdBid);
+					updFlg = "1";
+				}
+				if (inputUpdGenre != null) {
+					System.out.println("ジャンル:" + inputUpdGenre);
+					updFlg = "1";
+				}
+				if (inputUpdTitle != null) {
+					System.out.println("タイトル:" + inputUpdTitle);
+					updFlg = "1";
+				}
+				if (inputUpdPrice != null) {
+					System.out.println("値段:" + inputUpdPrice);
+					updFlg = "1";
+				}
+				if (inputUpdAuthor != null) {
+					System.out.println("作者:" + inputUpdAuthor);
+					updFlg = "1";
+				}
+				if (inputUpdPublisher != null) {
+					System.out.println("出版社:" + inputUpdPublisher);
+					updFlg = "1";
+				}
+				inputUpdBookValue = scan.next();
+				if (inputUpdBookValue.equals("1")) {
+					System.out.println("IDを入力してください");
+					System.out.println("例：BXXX");
+					inputUpdBid = scan.next();
+					if (!chkbid(inputUpdBid)) {
+						inputUpdBid = null;
+						System.err.println("不正な値です。もう一度入力してください。");
+					}
+					continue;
+				} else if (inputUpdBookValue.equals("2")) {
+					System.out.println("ジャンルを入力してください");
+					inputUpdGenre = scan.next();
+					continue;
+				} else if (inputUpdBookValue.equals("3")) {
+					System.out.println("タイトルを入力してください");
+					inputUpdTitle = scan.next();
+					continue;
+				} else if (inputUpdBookValue.equals("4")) {
+					System.out.println("値段を入力してください");
+					inputUpdPrice = scan.next();
+					continue;
+				} else if (inputUpdBookValue.equals("5")) {
+					System.out.println("作者を入力してください");
+					inputUpdAuthor = scan.next();
+					continue;
+				} else if (inputUpdBookValue.equals("6")) {
+					System.out.println("出版社を入力してください");
+					inputUpdPublisher = scan.next();
+					continue;
+				} else if (inputUpdBookValue.equals("0")) {
+					if (updFlg.equals("1")) {
+						break;
+					} else {
+						System.err.println("更新する項目がありません");
+					}
+				} else {
+					System.err.println("不正な数値です。もう一度入力してください");
+				}
+			}
+			if (updFlg.equals("1")) {
+				while (true) {
+					System.out.println("更新条件を選択してください");
+					System.out.println("1.ID");
+					System.out.println("2.ジャンル");
+					System.out.println("3.タイトル");
+					System.out.println("4.値段");
+					System.out.println("5.作者");
+					System.out.println("6.出版社");
+					System.out.println("0.更新処理を開始します");
+					if (inputWhereBid != null) {
+						System.out.println("ID:" + inputWhereBid);
+						whereFlg = "1";
+					}
+					if (inputWhereGenre != null) {
+						System.out.println("ジャンル:" + inputWhereGenre);
+						whereFlg = "1";
+					}
+					if (inputWhereTitle != null) {
+						System.out.println("タイトル:" + inputWhereTitle);
+						whereFlg = "1";
+					}
+					if (inputWherePrice != null) {
+						System.out.println("値段:" + inputWherePrice);
+						whereFlg = "1";
+					}
+					if (inputWhereAuthor != null) {
+						System.out.println("作者:" + inputWhereAuthor);
+						whereFlg = "1";
+					}
+					if (inputWherePublisher != null) {
+						System.out.println("出版社:" + inputWherePublisher);
+						whereFlg = "1";
+					}
+					inputWhereBookValue = scan.next();
+					if (inputWhereBookValue.equals("1")) {
+						System.out.println("IDを入力してください");
+						System.out.println("例：BXXX");
+						inputWhereBid = scan.next();
+						continue;
+					} else if (inputWhereBookValue.equals("2")) {
+						System.out.println("ジャンルを入力してください");
+						inputWhereGenre = scan.next();
+						continue;
+					} else if (inputWhereBookValue.equals("3")) {
+						System.out.println("タイトルを入力してください");
+						inputWhereTitle = scan.next();
+						continue;
+					} else if (inputWhereBookValue.equals("4")) {
+						System.out.println("値段を入力してください");
+						inputWherePrice = scan.next();
+						continue;
+					} else if (inputWhereBookValue.equals("5")) {
+						System.out.println("作者を入力してください");
+						inputWhereAuthor = scan.next();
+						continue;
+					} else if (inputWhereBookValue.equals("6")) {
+						System.out.println("出版社を入力してください");
+						inputWherePublisher = scan.next();
+						continue;
+					} else if (inputWhereBookValue.equals("0")) {
+						break;
+					} else {
+						System.err.println("不正な数値です。もう一度入力してください");
+					}
+				}
+				// Set句の作成
+				sqlUpd = " SET";
+				if (inputUpdBid != null) {
+					sqlUpd += " book.id = ";
+					sqlUpd += "'";
+					sqlUpd += inputUpdBid;
+					sqlUpd += "'";
+					updFlg = "2";
+				}
+				if (inputUpdGenre != null) {
+					if (updFlg.equals("2")) {
+						sqlUpd += ",";
+					}
+					sqlUpd += " book.genre = ";
+					sqlUpd += "'";
+					sqlUpd += inputUpdGenre;
+					sqlUpd += "'";
+					updFlg = "2";
+				}
+				if (inputUpdTitle != null) {
+					if (updFlg.equals("2")) {
+						sqlUpd += " AND";
+					}
+					sqlUpd += " book.title = ";
+					sqlUpd += "'";
+					sqlUpd += inputUpdTitle;
+					sqlUpd += "'";
+					updFlg = "2";
+				}
+				if (inputUpdPrice != null) {
+					if (updFlg.equals("2")) {
+						sqlUpd += " AND";
+					}
+					sqlUpd += " book.price = " + inputUpdPrice;
+					updFlg = "2";
+				}
+				if (inputUpdAuthor != null) {
+					if (updFlg.equals("2")) {
+						sqlUpd += " AND";
+					}
+					sqlUpd += " book.author = ";
+					sqlUpd += "'";
+					sqlUpd += inputUpdAuthor;
+					sqlUpd += "'";
+					updFlg = "2";
+				}
+				if (inputUpdPublisher != null) {
+					if (updFlg.equals("2")) {
+						sqlUpd += " AND";
+					}
+					sqlUpd += " book.publisher = ";
+					sqlUpd += "'";
+					sqlUpd += inputUpdPublisher;
+					sqlUpd += "'";
+					updFlg = "2";
+				}
+				sqlUpd += ",";
+				sqlUpd += " book.update_date = ";
+				sqlUpd += "'";
+				sqlUpd += strDate;
+				sqlUpd += "'";
+
+				// Where句の作成
+				if (whereFlg.equals("1")) {
+					sqlWhere = " WHERE";
+					if (inputWhereBid != null) {
+						sqlWhere += " book.id = ";
+						sqlWhere += "'";
+						sqlWhere += inputWhereBid;
+						sqlWhere += "'";
+						whereFlg = "2";
+					}
+					if (inputWhereGenre != null) {
+						if (whereFlg.equals("2")) {
+							sqlWhere += " AND";
+						}
+						sqlWhere += " book.genre = ";
+						sqlWhere += "'";
+						sqlWhere += inputWhereGenre;
+						sqlWhere += "'";
+						whereFlg = "2";
+					}
+					if (inputWhereTitle != null) {
+						if (whereFlg.equals("2")) {
+							sqlWhere += " AND";
+						}
+						sqlWhere += " book.title = ";
+						sqlWhere += "'";
+						sqlWhere += inputWhereTitle;
+						sqlWhere += "'";
+						whereFlg = "2";
+					}
+					if (inputWherePrice != null) {
+						if (whereFlg.equals("2")) {
+							sqlWhere += " AND";
+						}
+						sqlWhere += " book.price = " + inputWherePrice;
+						whereFlg = "2";
+					}
+					if (inputWhereAuthor != null) {
+						if (whereFlg.equals("2")) {
+							sqlWhere += " AND";
+						}
+						sqlWhere += " book.author = ";
+						sqlWhere += "'";
+						sqlWhere += inputWhereAuthor;
+						sqlWhere += "'";
+						whereFlg = "2";
+					}
+					if (inputWherePublisher != null) {
+						if (whereFlg.equals("2")) {
+							sqlWhere += " AND";
+						}
+						sqlWhere += " book.publisher = ";
+						sqlWhere += "'";
+						sqlWhere += inputWherePublisher;
+						sqlWhere += "'";
+						whereFlg = "2";
+					}
+				}
+				sql = "UPDATE book";
+				sql += sqlUpd;
+				if (sqlWhere != null) {
+					sql += sqlWhere;
+				}
+			}
+		}
+
+		// 図書館テーブルの場合
+		else if (inputvalue.equals("2")) {
+			while (true) {
+				System.out.println("更新する項目を選択してください");
+				System.out.println("1.ID");
+				System.out.println("2.図書館名");
+				System.out.println("0.更新条件を設定します");
+				if (inputUpdLid != null) {
+					System.out.println("ID:" + inputUpdLid);
+					updFlg = "1";
+				}
+				if (inputUpdLibName != null) {
+					System.out.println("図書館名:" + inputUpdLibName);
+					updFlg = "1";
+				}
+				inputUpdLibraryValue = scan.next();
+				if (inputUpdLibraryValue.equals("1")) {
+					System.out.println("IDを入力してください");
+					System.out.println("例：LXXX");
+					inputUpdLid = scan.next();
+					if (!chklid(inputUpdLid)) {
+						inputUpdLid = null;
+						System.err.println("不正な値です。もう一度入力してください。");
+					}
+					continue;
+				} else if (inputUpdLibraryValue.equals("2")) {
+					System.out.println("図書館名を入力してください");
+					inputUpdLibName = scan.next();
+					continue;
+				} else if (inputUpdLibraryValue.equals("0")) {
+					if (updFlg.equals("1")) {
+						break;
+					} else {
+						System.err.println("更新する項目がありません");
+					}
+				} else {
+					System.err.println("不正な数値です。もう一度入力してください。");
+				}
+			}
+			if (updFlg.equals("1")) {
+				while (true) {
+					System.out.println("更新条件を選択してください");
+					System.out.println("1.ID");
+					System.out.println("2.図書館名");
+					System.out.println("0.更新条件を設定します");
+					if (inputWhereLid != null) {
+						System.out.println("ID:" + inputWhereLid);
+						whereFlg = "1";
+					}
+					if (inputWhereLibName != null) {
+						System.out.println("図書館名:" + inputWhereLibName);
+						whereFlg = "1";
+					}
+					inputWhereLibraryValue = scan.next();
+					if (inputWhereLibraryValue.equals("1")) {
+						System.out.println("IDを入力してください");
+						System.out.println("例：LXXX");
+						inputWhereLid = scan.next();
+						continue;
+					} else if (inputWhereLibraryValue.equals("2")) {
+						System.out.println("図書館名を入力してください");
+						inputWhereLibName = scan.next();
+						continue;
+					} else if (inputWhereLibraryValue.equals("0")) {
+						break;
+					} else {
+						System.err.println("不正な数値です。もう一度入力してください。");
+					}
+				}
+			}
+			// Set句の作成
+			sqlUpd = " SET";
+			if (inputUpdLid != null) {
+				sqlUpd += " lblink.id = ";
+				sqlUpd += "'";
+				sqlUpd += inputUpdLid;
+				sqlUpd += "'";
+				updFlg = "2";
+			}
+			if (inputUpdLibName != null) {
+				if (updFlg.equals("2")) {
+					sqlUpd += ",";
+				}
+				sqlUpd += " library.libname = ";
+				sqlUpd += "'";
+				sqlUpd += inputUpdLibName;
+				sqlUpd += "'";
+				updFlg = "2";
+			}
+			sqlUpd += ",";
+			sqlUpd += " library.update_date = ";
+			sqlUpd += "'";
+			sqlUpd += strDate;
+			sqlUpd += "'";
+
+			// Where句の作成
+			if (whereFlg.equals("1")) {
+				sqlWhere = " WHERE";
+				if (inputWhereLid != null) {
+					sqlWhere += " library.id = ";
+					sqlWhere += "'";
+					sqlWhere += inputWhereLid;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputWhereLibName != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " library.libname = ";
+					sqlWhere += "'";
+					sqlWhere += inputWhereLibName;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				sql = "UPDATE library";
+				sql += sqlUpd;
+				if (sqlWhere != null) {
+					sql += sqlWhere;
+				}
+			}
+		}
+		// 紐付きテーブルの場合
+		else {
+			while (true) {
+				System.out.println("更新する項目を選択してください");
+				System.out.println("1.ID");
+				System.out.println("2.図書館ID");
+				System.out.println("3.本ID");
+				System.out.println("0.更新条件を設定します");
+				if (inputUpdLbid != null) {
+					System.out.println("ID:" + inputUpdLbid);
+					updFlg = "1";
+				}
+				if (inputUpdLid != null) {
+					System.out.println("ID:" + inputUpdLid);
+					updFlg = "1";
+				}
+				if (inputUpdBid != null) {
+					System.out.println("ID:" + inputUpdBid);
+					updFlg = "1";
+				}
+				inputUpdLblinkValue = scan.next();
+				if (inputUpdLblinkValue.equals("1")) {
+					System.out.println("IDを入力してください");
+					System.out.println("例：LBXX");
+					inputUpdLbid = scan.next();
+					if (!chklbid(inputUpdLbid)) {
+						inputUpdLbid = null;
+						System.err.println("不正な値です。もう一度入力してください。");
+					}
+					continue;
+				} else if (inputUpdLblinkValue.equals("2")) {
+					System.out.println("図書館IDを入力してください");
+					System.out.println("例：LXXX");
+					inputUpdLid = scan.next();
+					if (!chklid(inputUpdLid)) {
+						inputUpdLid = null;
+						System.err.println("不正な値です。もう一度入力してください。");
+					}
+					continue;
+				} else if (inputUpdLblinkValue.equals("3")) {
+					System.out.println("本IDを入力してください");
+					System.out.println("例：BXXX");
+					inputUpdBid = scan.next();
+					if (!chkbid(inputUpdBid)) {
+						inputUpdBid = null;
+						System.err.println("不正な値です。もう一度入力してください。");
+					}
+					continue;
+				} else if (inputUpdLblinkValue.equals("0")) {
+					break;
+				} else {
+					System.err.println("不正な数値です。もう一度入力してください。");
+				}
+			}
+			if (updFlg.equals("1")) {
+				while (true) {
+					System.out.println("更新条件を選択してください");
+					System.out.println("1.ID");
+					System.out.println("2.図書館ID");
+					System.out.println("3.本ID");
+					System.out.println("0.更新処理を開始します");
+					if (inputWhereLbid != null) {
+						System.out.println("ID:" + inputWhereLbid);
+						whereFlg = "1";
+					}
+					if (inputWhereLid != null) {
+						System.out.println("ID:" + inputWhereLid);
+						whereFlg = "1";
+					}
+					if (inputWhereBid != null) {
+						System.out.println("ID:" + inputWhereBid);
+						whereFlg = "1";
+					}
+					inputWhereLblinkValue = scan.next();
+					if (inputWhereLblinkValue.equals("1")) {
+						System.out.println("IDを入力してください");
+						System.out.println("例：LBXX");
+						inputWhereLbid = scan.next();
+						continue;
+					} else if (inputWhereLblinkValue.equals("2")) {
+						System.out.println("図書館IDを入力してください");
+						System.out.println("例：LXXX");
+						inputWhereLid = scan.next();
+						continue;
+					} else if (inputWhereLblinkValue.equals("3")) {
+						System.out.println("本IDを入力してください");
+						System.out.println("例：BXXX");
+						inputWhereBid = scan.next();
+						continue;
+					} else if (inputWhereLblinkValue.equals("0")) {
+						break;
+					} else {
+						System.err.println("不正な数値です。もう一度入力してください。");
+					}
+				}
+			}
+			// Set句の作成
+			sqlUpd = " SET";
+			if (inputUpdLbid != null) {
+				sqlUpd += " lblink.id = ";
+				sqlUpd += "'";
+				sqlUpd += inputUpdLbid;
+				sqlUpd += "'";
+				updFlg = "2";
+			}
+			if (inputUpdLid != null) {
+				if (updFlg.equals("2")) {
+					sqlUpd += ",";
+				}
+				sqlUpd += " lblink.libid = ";
+				sqlUpd += "'";
+				sqlUpd += inputUpdLid;
+				sqlUpd += "'";
+				updFlg = "2";
+			}
+			if (inputUpdBid != null) {
+				if (updFlg.equals("2")) {
+					sqlUpd += ",";
+				}
+				sqlUpd += " lblink.bid = ";
+				sqlUpd += "'";
+				sqlUpd += inputUpdBid;
+				sqlUpd += "'";
+				updFlg = "2";
+			}
+
+			sqlUpd += ",";
+			sqlUpd += " lblink.update_date = ";
+			sqlUpd += "'";
+			sqlUpd += strDate;
+			sqlUpd += "'";
+			// System.out.println(sqlUpd);
+
+			// Where句の作成
+			if (whereFlg.equals("1")) {
+				sqlWhere = " WHERE";
+				if (inputWhereLbid != null) {
+					sqlWhere += " lblink.id = ";
+					sqlWhere += "'";
+					sqlWhere += inputWhereLbid;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputWhereLid != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " lblink.libid = ";
+					sqlWhere += "'";
+					sqlWhere += inputWhereLid;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputWhereBid != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " lblink.bid = ";
+					sqlWhere += "'";
+					sqlWhere += inputWhereBid;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+			}
+
+			sql = "UPDATE lblink";
+			sql += sqlUpd;
+			if (sqlWhere != null) {
+				sql += sqlWhere;
+			}
+		}
+
+		// System.out.println(sql);
+		scan.close();
+		try {
+			dbconnectdao.executeSql(sql);
+			System.out.println("処理が完了しました。");
+		} catch (Exception e) {
+			/* エラーメッセージ */
+			System.err.println("処理に失敗しました");
+		}
+	}
+
+	public static void DeleteDb() {
+		Scanner scan = new Scanner(System.in);
+		DBConnectDao5 dbconnectdao = new DBConnectDao5();
+		String inputvalue = null;
+		String inputDelBookValue = null;
+		String inputDelLibraryValue = null;
+		String inputDelLblinkValue = null;
+		String sql = null;
+		String whereFlg = "0";
+		String sqlWhere = null;
+		String inputDelBid = null;
+		String inputDelLbid = null;
+		String inputDelLid = null;
+		String inputDelGenre = null;
+		String inputDelLibName = null;
+		String inputDelTitle = null;
+		String inputDelPrice = null;
+		String inputDelAuthor = null;
+		String inputDelPublisher = null;
+
+		while (true) {
+			System.out.println("対象を選択してください");
+			System.out.println("1.本データを選択");
+			System.out.println("2.図書館データを選択");
+			System.out.println("3.紐付きデータを選択");
+			inputvalue = scan.next();
+			if (chknum2(inputvalue)) {
+				break;
+			} else {
+				System.err.println("不正な数値です。もう一度入力してください。");
+			}
+		}
+		// 本テーブルの場合
+		if (inputvalue.equals("1")) {
+			while (true) {
+				System.out.println("削除条件を選択してください");
+				System.out.println("1.ID");
+				System.out.println("2.ジャンル");
+				System.out.println("3.タイトル");
+				System.out.println("4.値段");
+				System.out.println("5.作者");
+				System.out.println("6.出版社");
+				System.out.println("0.削除を開始します");
+				if (inputDelBid != null) {
+					System.out.println("ID:" + inputDelBid);
+					whereFlg = "1";
+				}
+				if (inputDelGenre != null) {
+					System.out.println("ジャンル:" + inputDelGenre);
+					whereFlg = "1";
+				}
+				if (inputDelTitle != null) {
+					System.out.println("タイトル:" + inputDelTitle);
+					whereFlg = "1";
+				}
+				if (inputDelPrice != null) {
+					System.out.println("値段:" + inputDelPrice);
+					whereFlg = "1";
+				}
+				if (inputDelAuthor != null) {
+					System.out.println("作者:" + inputDelAuthor);
+					whereFlg = "1";
+				}
+				if (inputDelPublisher != null) {
+					System.out.println("出版社:" + inputDelPublisher);
+					whereFlg = "1";
+				}
+				inputDelBookValue = scan.next();
+				if (inputDelBookValue.equals("1")) {
+					System.out.println("IDを入力してください");
+					System.out.println("例：BXXX");
+					inputDelBid = scan.next();
+					continue;
+				} else if (inputDelBookValue.equals("2")) {
+					System.out.println("ジャンルを入力してください");
+					inputDelGenre = scan.next();
+					continue;
+				} else if (inputDelBookValue.equals("3")) {
+					System.out.println("タイトルを入力してください");
+					inputDelTitle = scan.next();
+					continue;
+				} else if (inputDelBookValue.equals("4")) {
+					System.out.println("値段を入力してください");
+					inputDelPrice = scan.next();
+					continue;
+				} else if (inputDelBookValue.equals("5")) {
+					System.out.println("作者を入力してください");
+					inputDelAuthor = scan.next();
+					continue;
+				} else if (inputDelBookValue.equals("6")) {
+					System.out.println("出版社を入力してください");
+					inputDelPublisher = scan.next();
+					continue;
+				} else if (inputDelBookValue.equals("0")) {
+					break;
+				} else {
+					System.err.println("不正な数値です。もう一度入力してください。");
+				}
+			}
+			if (whereFlg.equals("1")) {
+				sqlWhere = " WHERE";
+				if (inputDelBid != null) {
+					sqlWhere += " book.id = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelBid;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputDelGenre != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " book.genre = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelGenre;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputDelTitle != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " book.title = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelTitle;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputDelPrice != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " book.price = " + inputDelPrice;
+					whereFlg = "2";
+				}
+				if (inputDelAuthor != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " book.author = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelAuthor;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputDelPublisher != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " book.publisher = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelPublisher;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+			}
+			// System.out.println(sqlWhere);
+			sql = "DELETE ";
+			sql += "FROM book ";
+			if (whereFlg.equals("2")) {
+				sql += sqlWhere;
+			}
+			// System.out.println(sql);
+		}
+
+		// 図書館テーブルの場合
+		else if (inputvalue.equals("2")) {
+			while (true) {
+				System.out.println("削除条件を選択してください");
+				System.out.println("1.ID");
+				System.out.println("2.図書館名");
+				System.out.println("0.削除を開始します");
+				if (inputDelLbid != null) {
+					System.out.println("ID:" + inputDelLbid);
+					whereFlg = "1";
+				}
+				if (inputDelLibName != null) {
+					System.out.println("図書館名:" + inputDelLibName);
+					whereFlg = "1";
+				}
+				inputDelLibraryValue = scan.next();
+				if (inputDelLibraryValue.equals("1")) {
+					System.out.println("IDを入力してください");
+					System.out.println("例：LXXX");
+					inputDelLbid = scan.next();
+					continue;
+				} else if (inputDelLibraryValue.equals("2")) {
+					System.out.println("図書館名を入力してください");
+					inputDelLibName = scan.next();
+					continue;
+				} else if (inputDelLibraryValue.equals("0")) {
+					break;
+				} else {
+					System.err.println("不正な数値です。もう一度入力してください。");
+				}
+			}
+			if (whereFlg.equals("1")) {
+				sqlWhere = " WHERE";
+				if (inputDelLbid != null) {
+					sqlWhere += " library.id = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelLbid;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputDelLibName != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " library.libname = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelLibName;
+					sqlWhere += "'";
+				}
+			}
+			// System.out.println(sqlWhere);
+			sql = "DELETE ";
+			sql += "FROM library ";
+			if (whereFlg.equals("2")) {
+				sql += sqlWhere;
+			}
+			// System.out.println(sql);
+			scan.close();
+			// 紐付きテーブルの場合
+		} else {
+			while (true) {
+				System.out.println("削除条件を選択してください");
+				System.out.println("1.ID");
+				System.out.println("2.図書館ID");
+				System.out.println("3.本ID");
+				System.out.println("0.削除を開始します");
+				if (inputDelLbid != null) {
+					System.out.println("ID:" + inputDelLbid);
+					whereFlg = "1";
+				}
+				if (inputDelLid != null) {
+					System.out.println("ID:" + inputDelLid);
+					whereFlg = "1";
+				}
+				if (inputDelBid != null) {
+					System.out.println("ID:" + inputDelBid);
+					whereFlg = "1";
+				}
+				inputDelLblinkValue = scan.next();
+				if (inputDelLblinkValue.equals("1")) {
+					System.out.println("IDを入力してください");
+					System.out.println("例：LBXX");
+					inputDelLbid = scan.next();
+					continue;
+				} else if (inputDelLblinkValue.equals("2")) {
+					System.out.println("図書館IDを入力してください");
+					System.out.println("例：LXXX");
+					inputDelLid = scan.next();
+					continue;
+				} else if (inputDelLblinkValue.equals("3")) {
+					System.out.println("本IDを入力してください");
+					System.out.println("例：BXXX");
+					inputDelBid = scan.next();
+					continue;
+				} else if (inputDelLblinkValue.equals("0")) {
+					break;
+				} else {
+					System.err.println("不正な数値です。もう一度入力してください。");
+				}
+			}
+
+			if (whereFlg.equals("1")) {
+				sqlWhere = "WHERE ";
+				if (inputDelLbid != null) {
+					sqlWhere += " lblink.id = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelLbid;
+					sqlWhere += "'";
+					whereFlg = "2";
+				}
+				if (inputDelLid != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " lblink.libid = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelLid;
+					sqlWhere += "'";
+				}
+				if (inputDelBid != null) {
+					if (whereFlg.equals("2")) {
+						sqlWhere += " AND";
+					}
+					sqlWhere += " lblink.bid = ";
+					sqlWhere += "'";
+					sqlWhere += inputDelBid;
+					sqlWhere += "'";
+				}
+			}
+			sql = "DELETE ";
+			sql += "FROM lblink ";
+			if (whereFlg.equals("2")) {
+				sql += sqlWhere;
+			}
+		}
+
+		//System.out.println(sql);
+		try {
+			dbconnectdao.executeSql(sql);
 			System.out.println("処理が完了しました。");
 		} catch (Exception e) {
 			/* エラーメッセージ */
